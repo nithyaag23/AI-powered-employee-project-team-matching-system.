@@ -8,6 +8,8 @@ import type {
   SwapSimulationResult,
   HealthResponse,
   DemoBundle,
+  ProjectAnalysisRequest,
+  ProjectAnalysisResponse,
 } from '../types/api';
 
 import {
@@ -169,26 +171,114 @@ class ApiService {
   }
 
   /**
+   * Analyze Project Requirements Statement with AI (Gemma 4 E4B):
+   * Calls POST /api/projects/analyze
+   */
+  async analyzeProject(req: ProjectAnalysisRequest): Promise<ApiResponse<ProjectAnalysisResponse>> {
+    if (!FORCE_MOCK && this.isBackendHealthy) {
+      try {
+        const res = await fetch(`${this.baseUrl}/api/projects/analyze`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(req),
+        });
+        if (res.ok) {
+          const data: ProjectAnalysisResponse = await res.json();
+          this.activeSource = 'live-backend';
+          return { data, source: 'live-backend' };
+        }
+      } catch (e) {
+        if (!ENABLE_MOCK_FALLBACK) throw e;
+      }
+    }
+
+    // High-fidelity fallback analyzer
+    this.activeSource = 'mock-fixture';
+    const textLower = `${req.name} ${req.description}`.toLowerCase();
+    const extractedSkills = [];
+
+    const tax: Record<string, { critical: boolean; weight: number }> = {
+      Python: { critical: true, weight: 3.0 },
+      Go: { critical: true, weight: 3.0 },
+      React: { critical: false, weight: 2.0 },
+      TypeScript: { critical: false, weight: 2.5 },
+      Docker: { critical: false, weight: 1.5 },
+      Kubernetes: { critical: true, weight: 2.5 },
+      PostgreSQL: { critical: false, weight: 2.0 },
+      PyTorch: { critical: true, weight: 3.0 },
+      Redis: { critical: false, weight: 1.5 },
+      FastAPI: { critical: false, weight: 2.0 },
+      'CI/CD': { critical: false, weight: 1.5 },
+      Terraform: { critical: false, weight: 1.5 },
+    };
+
+    for (const [skillName, meta] of Object.entries(tax)) {
+      if (textLower.includes(skillName.toLowerCase())) {
+        extractedSkills.push({
+          name: skillName,
+          min_level: 'intermediate' as const,
+          weight: meta.weight,
+          critical: meta.critical,
+        });
+      }
+    }
+
+    if (extractedSkills.length === 0) {
+      extractedSkills.push(
+        { name: 'Python', min_level: 'intermediate' as const, weight: 2.5, critical: true },
+        { name: 'Docker', min_level: 'intermediate' as const, weight: 1.5, critical: false }
+      );
+    }
+
+    const customProject: Project = {
+      id: `PRJ-MGR-${Date.now().toString().slice(-4)}`,
+      name: req.name || 'Custom Staffing Mandate',
+      description: req.description,
+      required_skills: extractedSkills,
+      team_size: req.team_size || 3,
+      availability_window: 'Immediate (Next 3 Months)',
+      status: 'staffing',
+    };
+
+    return {
+      data: {
+        project: customProject,
+        warnings: ['Analyzed using deterministic rule fallback (Gemma 4 E4B adapter).'],
+      },
+      source: 'mock-fixture',
+    };
+  }
+
+  /**
    * Get candidate rankings for a project:
    * Supports GET /api/projects/{id}/matches or POST /api/matches
    */
-  async getProjectMatches(projectId: string): Promise<ApiResponse<MatchResult[]>> {
+  async getProjectMatches(projectId: string, customProject?: Project): Promise<ApiResponse<MatchResult[]>> {
     if (!FORCE_MOCK && this.isBackendHealthy) {
       try {
-        // Try GET /api/projects/{id}/matches
-        let res = await fetch(`${this.baseUrl}/api/projects/${projectId}/matches`);
-        if (!res.ok) {
-          // Fallback to POST /api/matches
+        let res: Response;
+        if (customProject) {
           res = await fetch(`${this.baseUrl}/api/matches`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ project_id: projectId }),
+            body: JSON.stringify({ project: customProject }),
           });
-        }
+        } else {
+          res = await fetch(`${this.baseUrl}/api/projects/${projectId}/matches`);
+          if (!res.ok) {
+            res = await fetch(`${this.baseUrl}/api/matches`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ project_id: projectId }),
+            });
+          }
         if (res.ok) {
-          const data: MatchResult[] = await res.json();
+          const resJson = await res.json();
+          const list: MatchResult[] = Array.isArray(resJson)
+            ? resJson
+            : resJson.matches || [];
           // Ensure employees are mapped if backend sends IDs
-          const enriched = data.map((item) => {
+          const enriched = list.map((item) => {
             if (!item.employee) {
               item.employee = MOCK_EMPLOYEES.find((e) => e.id === item.employee_id);
             }
@@ -204,7 +294,7 @@ class ApiService {
 
     // Mock data handling
     this.activeSource = 'mock-fixture';
-    if (projectId === 'proj-1' || projectId === 'PRJ-101') {
+    if (!customProject && (projectId === 'proj-1' || projectId === 'PRJ-101')) {
       return { data: MOCK_PROJECT_1_MATCHES, source: 'mock-fixture' };
     }
 
@@ -235,18 +325,27 @@ class ApiService {
    * Get team optimization recommendation:
    * Supports POST /api/projects/{id}/recommend-team or POST /api/teams/optimize
    */
-  async getOptimizedTeam(projectId: string): Promise<ApiResponse<TeamResult>> {
+  async getOptimizedTeam(projectId: string, customProject?: Project): Promise<ApiResponse<TeamResult>> {
     if (!FORCE_MOCK && this.isBackendHealthy) {
       try {
-        let res = await fetch(`${this.baseUrl}/api/projects/${projectId}/recommend-team`, {
-          method: 'POST',
-        });
-        if (!res.ok) {
+        let res: Response;
+        if (customProject) {
           res = await fetch(`${this.baseUrl}/api/teams/optimize`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ project_id: projectId }),
+            body: JSON.stringify({ project: customProject }),
           });
+        } else {
+          res = await fetch(`${this.baseUrl}/api/projects/${projectId}/recommend-team`, {
+            method: 'POST',
+          });
+          if (!res.ok) {
+            res = await fetch(`${this.baseUrl}/api/teams/optimize`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ project_id: projectId }),
+            });
+          }
         }
         if (res.ok) {
           const data = await res.json();
@@ -269,18 +368,27 @@ class ApiService {
    * Compare Baseline vs Optimized Team:
    * Supports POST /api/projects/{id}/compare or POST /api/teams/compare
    */
-  async compareBaseline(projectId: string): Promise<ApiResponse<ComparisonResult>> {
+  async compareBaseline(projectId: string, customProject?: Project): Promise<ApiResponse<ComparisonResult>> {
     if (!FORCE_MOCK && this.isBackendHealthy) {
       try {
-        let res = await fetch(`${this.baseUrl}/api/projects/${projectId}/compare`, {
-          method: 'POST',
-        });
-        if (!res.ok) {
+        let res: Response;
+        if (customProject) {
           res = await fetch(`${this.baseUrl}/api/teams/compare`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ project_id: projectId }),
+            body: JSON.stringify({ project: customProject }),
           });
+        } else {
+          res = await fetch(`${this.baseUrl}/api/projects/${projectId}/compare`, {
+            method: 'POST',
+          });
+          if (!res.ok) {
+            res = await fetch(`${this.baseUrl}/api/teams/compare`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ project_id: projectId }),
+            });
+          }
         }
         if (res.ok) {
           const data = await res.json();

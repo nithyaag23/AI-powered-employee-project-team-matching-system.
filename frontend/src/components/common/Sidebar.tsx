@@ -27,6 +27,7 @@ interface SidebarProps {
   onCloseMobile: () => void;
   isCollapsed: boolean;
   onToggleCollapsed: () => void;
+  onOpenCreateModal?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -41,6 +42,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
   isCollapsed,
   onToggleCollapsed,
+  onOpenCreateModal,
 }) => {
   const isLive = dataSource === 'live-backend' && health?.status === 'healthy';
 
@@ -186,6 +188,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </button>
             );
           })}
+
+          {/* Quick Action: Enter Project Requirements (AI) */}
+          {onOpenCreateModal && (
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={onOpenCreateModal}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl border border-dashed border-teal-500/40 bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 font-semibold text-xs transition-all shadow-sm shadow-teal-500/10 cursor-pointer ${
+                  isCollapsed ? 'justify-center p-2.5' : ''
+                }`}
+                title="Enter Project Requirements with Gemma 4 E4B"
+              >
+                <Sparkles className="w-4 h-4 text-teal-400 shrink-0" />
+                {!isCollapsed && (
+                  <div className="text-left min-w-0">
+                    <span className="block truncate">+ Enter Mandate (AI)</span>
+                    <span className="block text-[9px] text-teal-400/80 font-mono font-normal">
+                      Gemma 4 E4B
+                    </span>
+                  </div>
+                )}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* System & Health Status Area */}
@@ -222,11 +248,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {/* AI Engine Status */}
               <div className="px-2 py-1.5 rounded-lg bg-slate-850/50 flex items-center justify-between text-[11px] text-slate-400">
                 <div className="flex items-center gap-1.5 truncate">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                  <span className="truncate">Open-Weight AI</span>
+                  <Sparkles className="w-3.5 h-3.5 text-teal-400 shrink-0" />
+                  <span className="truncate">{health?.model_name || 'Gemma 4 E4B'}</span>
                 </div>
                 <span className="text-[10px] font-mono text-slate-300">
-                  {health?.ai_service_available ? 'Ready' : 'Fallback'}
+                  {health?.ai_service_available ? 'Active' : 'Fallback'}
                 </span>
               </div>
             </div>

@@ -390,8 +390,8 @@ class HealthResponse(BaseModel):
     app_version: str = "1.0.0"
     backend_version: str = "1.0.0"
     ai_service_available: bool = True
-    model_name: str = "Open-Weight Rule Engine & AI Adapter"
-    message: str = "Connected to live FastAPI backend."
+    model_name: str = "Gemma 4 E4B"
+    message: str = "Connected to live FastAPI backend with Gemma 4 E4B."
 
 
 class DemoDataResponse(BaseModel):

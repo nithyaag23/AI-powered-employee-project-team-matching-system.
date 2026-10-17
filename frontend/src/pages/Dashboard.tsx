@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Users,
   Layers,
@@ -22,6 +22,7 @@ import { RecommendedTeamView } from '../components/team/RecommendedTeamView';
 import { SkillCoverageMatrix } from '../components/team/SkillCoverageMatrix';
 import { BaselineComparison } from '../components/comparison/BaselineComparison';
 import { WhatIfSimulator } from '../components/simulator/WhatIfSimulator';
+import { EnterProjectModal } from '../components/dashboard/EnterProjectModal';
 import { LoadingState } from '../components/common/LoadingState';
 import { ErrorState } from '../components/common/ErrorState';
 import type { TabKey } from '../components/common/Sidebar';
@@ -33,6 +34,9 @@ interface DashboardProps {
   onSelectProject: (id: string) => void;
   onProjectsLoaded?: (projects: Project[]) => void;
   onCandidatesCountChange?: (count: number) => void;
+  isCreateModalOpen?: boolean;
+  onOpenCreateModal?: () => void;
+  onCloseCreateModal?: () => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -42,8 +46,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onSelectProject,
   onProjectsLoaded,
   onCandidatesCountChange,
+  isCreateModalOpen = false,
+  onOpenCreateModal,
+  onCloseCreateModal,
 }) => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const projectsRef = useRef(projects);
+  projectsRef.current = projects;
   const [employees, setEmployees] = useState<Employee[]>([]);
 
   const [matches, setMatches] = useState<MatchResult[]>([]);
@@ -93,17 +102,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
   }, []);
 
   // 2. Load matches, recommended team, and comparison whenever selectedProjectId changes
-  const loadProjectAnalysis = useCallback(async (projId: string) => {
+  const loadProjectAnalysis = useCallback(async (projId: string, customProj?: Project) => {
     if (!projId) return;
 
     setIsLoadingAnalysis(true);
     setErrorMessage(null);
 
+    const projectToUse =
+      customProj ||
+      projectsRef.current.find(
+        (p) => p.id === projId || p.id.toLowerCase() === projId.toLowerCase()
+      );
+
     try {
       const [matchesRes, teamRes, compRes] = await Promise.all([
-        apiService.getProjectMatches(projId),
-        apiService.getOptimizedTeam(projId),
-        apiService.compareBaseline(projId),
+        apiService.getProjectMatches(projId, projectToUse),
+        apiService.getOptimizedTeam(projId, projectToUse),
+        apiService.compareBaseline(projId, projectToUse),
       ]);
 
       setMatches(matchesRes.data);
@@ -120,6 +135,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
       setIsLoadingAnalysis(false);
     }
   }, [onCandidatesCountChange]);
+
+  const handleProjectCreated = (newProject: Project) => {
+    const updated = [newProject, ...projectsRef.current];
+    setProjects(updated);
+    projectsRef.current = updated;
+    onProjectsLoaded?.(updated);
+    onSelectProject(newProject.id);
+    loadProjectAnalysis(newProject.id, newProject);
+    onSelectTab('candidates');
+  };
 
   useEffect(() => {
     if (selectedProjectId) {
@@ -192,6 +217,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         projects={projects}
         selectedProjectId={selectedProjectId}
         onSelectProject={onSelectProject}
+        onOpenCreateModal={onOpenCreateModal}
       />
 
       {/* 2. Project Mandate Specification */}
@@ -382,6 +408,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
           )}
         </>
       )}
+
+      {/* Modal: Enter Project Requirements with Gemma 4 E4B AI */}
+      <EnterProjectModal
+        isOpen={isCreateModalOpen}
+        onClose={onCloseCreateModal || (() => {})}
+        onProjectCreated={handleProjectCreated}
+      />
     </div>
   );
 };

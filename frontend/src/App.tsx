@@ -16,6 +16,7 @@ export function App() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('proj-1');
   const [candidatesCount, setCandidatesCount] = useState<number>(8);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
 
   // Responsive sidebar state
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
@@ -74,6 +75,7 @@ export function App() {
         onCloseMobile={() => setIsOpenMobile(false)}
         isCollapsed={isCollapsed}
         onToggleCollapsed={() => setIsCollapsed(!isCollapsed)}
+        onOpenCreateModal={() => setIsCreateModalOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -93,6 +95,7 @@ export function App() {
           activeTab={activeTab}
           onSelectTab={setActiveTab}
           candidatesCount={candidatesCount}
+          onOpenCreateModal={() => setIsCreateModalOpen(true)}
         />
 
         {/* Dashboard Content */}
@@ -104,6 +107,9 @@ export function App() {
             onSelectProject={(id) => setSelectedProjectId(id)}
             onProjectsLoaded={(loadedProjects) => setProjects(loadedProjects)}
             onCandidatesCountChange={(count) => setCandidatesCount(count)}
+            isCreateModalOpen={isCreateModalOpen}
+            onOpenCreateModal={() => setIsCreateModalOpen(true)}
+            onCloseCreateModal={() => setIsCreateModalOpen(false)}
           />
         </div>
 

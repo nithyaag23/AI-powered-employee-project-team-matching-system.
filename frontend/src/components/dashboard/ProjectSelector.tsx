@@ -1,16 +1,18 @@
-import { FolderGit2, Users, Calendar, CheckCircle2, Flame } from 'lucide-react';
+import { FolderGit2, Users, Calendar, CheckCircle2, Flame, Sparkles } from 'lucide-react';
 import type { Project } from '../../types/api';
 
 interface ProjectSelectorProps {
   projects: Project[];
   selectedProjectId: string;
   onSelectProject: (projectId: string) => void;
+  onOpenCreateModal?: () => void;
 }
 
 export const ProjectSelector: React.FC<ProjectSelectorProps> = ({
   projects,
   selectedProjectId,
   onSelectProject,
+  onOpenCreateModal,
 }) => {
   return (
     <div className="space-y-4">
@@ -22,16 +24,29 @@ export const ProjectSelector: React.FC<ProjectSelectorProps> = ({
             Active Staffing Mandates
           </h2>
           <p className="text-xs text-slate-500 mt-0.5 m-0">
-            Select an enterprise staffing project to calculate candidate matches and generate complementary teams.
+            Select an enterprise staffing project or enter new project requirements using Gemma 4 E4B AI.
           </p>
         </div>
-        <span className="text-[11px] font-mono text-slate-400 bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800">
-          {projects.length} Mandates Loaded
-        </span>
+
+        <div className="flex items-center gap-2.5">
+          {onOpenCreateModal && (
+            <button
+              type="button"
+              onClick={onOpenCreateModal}
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-teal-500/20 via-emerald-500/20 to-indigo-500/20 hover:from-teal-500/30 hover:to-indigo-500/30 text-teal-300 border border-teal-500/40 text-xs font-bold transition-all shadow-sm shadow-teal-500/10 cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+              <span>+ Enter Requirements (AI)</span>
+            </button>
+          )}
+          <span className="text-[11px] font-mono text-slate-400 bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800">
+            {projects.length} Mandates
+          </span>
+        </div>
       </div>
 
-      {/* 3 Project Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Project Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {projects.map((proj) => {
           const isSelected = proj.id === selectedProjectId;
 
@@ -125,6 +140,42 @@ export const ProjectSelector: React.FC<ProjectSelectorProps> = ({
             </div>
           );
         })}
+
+        {/* Enter New Requirements (AI Wizard) Card */}
+        {onOpenCreateModal && (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={onOpenCreateModal}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onOpenCreateModal();
+              }
+            }}
+            className="cursor-pointer rounded-2xl p-5 border-2 border-dashed border-teal-500/30 hover:border-teal-500/70 bg-navy-900/40 hover:bg-teal-950/20 transition-all text-left flex flex-col justify-between group focus:outline-none focus:ring-2 focus:ring-teal-500/50 min-h-[220px]"
+          >
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wider bg-teal-950/80 text-teal-300 border border-teal-500/30 flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-teal-400" />
+                  AI Wizard
+                </span>
+                <span className="text-[10px] font-mono text-teal-400">Gemma 4 E4B</span>
+              </div>
+              <h3 className="text-sm font-bold text-slate-100 group-hover:text-teal-300 transition-colors mb-1.5">
+                + Enter Project Requirements
+              </h3>
+              <p className="text-xs text-slate-400 leading-relaxed m-0">
+                Type or paste a new project statement of work. Gemma 4 E4B will extract required skills, levels, and weights automatically.
+              </p>
+            </div>
+
+            <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-teal-400 font-semibold group-hover:translate-x-0.5 transition-transform">
+              <span>Launch Requirements Wizard &rarr;</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

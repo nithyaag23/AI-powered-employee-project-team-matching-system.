@@ -12,6 +12,7 @@ from backend.adapters.ai_adapter import (
     analyze_project_text,
     extract_skills_from_text,
 )
+from backend.ai.config import config
 from backend.data.loader import (
     get_seed_employee_by_id,
     get_seed_employees,
@@ -98,7 +99,14 @@ def resolve_candidate_pool(candidates: Optional[List[Employee]]) -> List[Employe
 @router.get("/health", response_model=HealthResponse, summary="Service Health Check")
 def get_health() -> HealthResponse:
     """Returns application status and version."""
-    return HealthResponse(status="ok", app_version="1.0.0")
+    return HealthResponse(
+        status="ok",
+        app_version="1.0.0",
+        backend_version="1.0.0",
+        ai_service_available=True,
+        model_name=config.model_name,
+        message=f"Connected to live FastAPI backend with {config.model_name}.",
+    )
 
 
 @router.get("/demo", response_model=DemoDataResponse, summary="Get Synthetic Demo Dataset")

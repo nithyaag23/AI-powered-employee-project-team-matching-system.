@@ -11,6 +11,7 @@ import {
   Scale,
   ArrowLeftRight,
   Check,
+  Sparkles,
 } from 'lucide-react';
 import type { Project, HealthResponse } from '../../types/api';
 import type { TabKey } from './Sidebar';
@@ -25,6 +26,7 @@ interface TopNavProps {
   activeTab: TabKey;
   onSelectTab: (tab: TabKey) => void;
   candidatesCount?: number;
+  onOpenCreateModal?: () => void;
 }
 
 export const TopNav: React.FC<TopNavProps> = ({
@@ -37,6 +39,7 @@ export const TopNav: React.FC<TopNavProps> = ({
   activeTab,
   onSelectTab,
   candidatesCount,
+  onOpenCreateModal,
 }) => {
   const [isProjectDropdownOpen, setIsProjectDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -108,7 +111,7 @@ export const TopNav: React.FC<TopNavProps> = ({
               onClick={() => setIsProjectDropdownOpen((prev) => !prev)}
               aria-expanded={isProjectDropdownOpen}
               aria-haspopup="listbox"
-              className={`flex items-center gap-2.5 px-3 py-1.5 rounded-xl border transition-all text-left group ${
+              className={`flex items-center gap-2.5 px-3 py-1.5 rounded-xl border transition-all text-left group cursor-pointer ${
                 isProjectDropdownOpen
                   ? 'bg-slate-800 border-teal-500/60 ring-2 ring-teal-500/20'
                   : 'bg-slate-850/90 border-slate-700/80 hover:border-slate-600 hover:bg-slate-800'
@@ -193,9 +196,38 @@ export const TopNav: React.FC<TopNavProps> = ({
                     );
                   })}
                 </div>
+
+                {onOpenCreateModal && (
+                  <div className="pt-2 border-t border-slate-800/80 mt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsProjectDropdownOpen(false);
+                        onOpenCreateModal();
+                      }}
+                      className="w-full text-center py-2 px-3 rounded-xl bg-gradient-to-r from-teal-500/20 to-indigo-500/20 hover:from-teal-500/30 hover:to-indigo-500/30 text-teal-300 border border-teal-500/40 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>+ Enter New Requirements (Gemma 4 E4B)</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
+
+          {/* Quick Enter Requirements AI Button */}
+          {onOpenCreateModal && (
+            <button
+              type="button"
+              onClick={onOpenCreateModal}
+              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 text-xs font-bold transition-all cursor-pointer shadow-sm shadow-teal-500/5"
+              title="Enter new project requirements using Gemma 4 E4B"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+              <span>+ New Requirements (AI)</span>
+            </button>
+          )}
         </div>
 
         {/* Center: Desktop Navigation Tabs */}
@@ -261,7 +293,9 @@ export const TopNav: React.FC<TopNavProps> = ({
             ) : (
               <Database className="w-3.5 h-3.5 text-amber-400 shrink-0" />
             )}
-            <span className="hidden sm:inline font-mono">{isLive ? 'FastAPI 200 OK' : 'Mock Mode'}</span>
+            <span className="hidden sm:inline font-mono">
+              {isLive ? (health?.model_name || 'Gemma 4 E4B') : 'Mock Mode'}
+            </span>
           </div>
         </div>
       </div>

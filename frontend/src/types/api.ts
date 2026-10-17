@@ -131,3 +131,14 @@ export interface DemoBundle {
   projects: Project[];
   employees: Employee[];
 }
+
+export interface ProjectAnalysisRequest {
+  name: string;
+  description: string;
+  team_size?: number;
+}
+
+export interface ProjectAnalysisResponse {
+  project: Project;
+  warnings: string[];
+}
