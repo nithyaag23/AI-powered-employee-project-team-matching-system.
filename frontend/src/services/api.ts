@@ -204,7 +204,7 @@ class ApiService {
 
     // Mock data handling
     this.activeSource = 'mock-fixture';
-    if (projectId === 'proj-1') {
+    if (projectId === 'proj-1' || projectId === 'PRJ-101') {
       return { data: MOCK_PROJECT_1_MATCHES, source: 'mock-fixture' };
     }
 

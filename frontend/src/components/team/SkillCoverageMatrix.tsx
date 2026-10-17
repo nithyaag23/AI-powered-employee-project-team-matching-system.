@@ -14,7 +14,6 @@ export const SkillCoverageMatrix: React.FC<SkillCoverageMatrixProps> = ({
   employees,
   project,
 }) => {
-  // Resolve member objects
   const memberObjects: Employee[] = team.members.map((m) => {
     if (typeof m === 'string') {
       return (
@@ -32,40 +31,39 @@ export const SkillCoverageMatrix: React.FC<SkillCoverageMatrixProps> = ({
   });
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg space-y-6">
+    <div className="bg-navy-900 border border-slate-800/90 rounded-2xl p-6 shadow-card space-y-6">
       <div>
         <h3 className="text-base font-bold text-slate-100 flex items-center gap-2 m-0">
-          <ShieldCheck className="w-5 h-5 text-emerald-400" />
-          Skill Coverage & Gap Analysis
+          <ShieldCheck className="w-5 h-5 text-teal-400" />
+          Skill Coverage & Gap Audit
         </h3>
-        <p className="text-xs text-slate-400 m-0 mt-0.5">
-          Auditing project competencies against assembled team members' verified skills.
+        <p className="text-xs text-slate-400 mt-0.5 m-0">
+          Cross-referencing mandate requirements against verified credentials of the assembled team roster.
         </p>
       </div>
 
       {/* 3 Categories: Covered, Partial, Critical Gaps */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* 1. Fully Covered Competencies */}
-        <div className="bg-slate-950/70 border border-emerald-900/40 rounded-xl p-4 flex flex-col justify-between">
+        <div className="bg-navy-950/70 border border-emerald-500/20 rounded-2xl p-4 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-emerald-900/40">
+            <div className="flex items-center justify-between pb-3 mb-3.5 border-b border-emerald-500/20">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 <h4 className="text-xs font-bold text-emerald-300 uppercase tracking-wider m-0">
                   Fully Covered Skills
                 </h4>
               </div>
-              <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">
+              <span className="text-xs font-mono font-bold text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/30">
                 {team.covered_skills.length}
               </span>
             </div>
 
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {team.covered_skills.map((skillName) => {
                 const req = project.required_skills.find(
                   (s) => s.name.toLowerCase() === skillName.toLowerCase()
                 );
-                // Find member who covers it
                 const coveringMember = memberObjects.find((m) =>
                   m.skills.some((s) => s.name.toLowerCase() === skillName.toLowerCase())
                 );
@@ -76,47 +74,47 @@ export const SkillCoverageMatrix: React.FC<SkillCoverageMatrixProps> = ({
                 return (
                   <div
                     key={skillName}
-                    className="p-2.5 rounded-lg bg-slate-900/80 border border-emerald-900/30 text-xs"
+                    className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs hover:border-slate-700 transition-colors"
                   >
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center justify-between mb-1.5">
                       <span className="font-semibold text-slate-100">{skillName}</span>
                       {req?.critical && <CriticalBadge label="Critical" />}
                     </div>
                     <div className="flex items-center justify-between text-[11px] text-slate-400">
-                      <span>Covered by: <strong>{coveringMember?.name || 'Team'}</strong></span>
-                      {skillDetails && <LevelBadge level={skillDetails.level} />}
+                      <span>Covered by: <strong className="text-slate-200">{coveringMember?.name || 'Team'}</strong></span>
+                      {skillDetails && <LevelBadge level={skillDetails.level} size="sm" />}
                     </div>
                   </div>
                 );
               })}
             </div>
           </div>
-          <p className="text-[10px] text-emerald-400/80 pt-3 border-t border-emerald-900/20 mt-3 m-0">
+          <p className="text-[11px] text-emerald-400/80 pt-3 border-t border-emerald-500/10 mt-3 m-0">
             ✓ Meets or exceeds required proficiency threshold.
           </p>
         </div>
 
         {/* 2. Partially Covered Skills */}
-        <div className="bg-slate-950/70 border border-amber-900/40 rounded-xl p-4 flex flex-col justify-between">
+        <div className="bg-navy-950/70 border border-amber-500/20 rounded-2xl p-4 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-amber-900/40">
+            <div className="flex items-center justify-between pb-3 mb-3.5 border-b border-amber-500/20">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-amber-400" />
                 <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider m-0">
                   Partially Covered
                 </h4>
               </div>
-              <span className="text-xs font-mono font-bold text-amber-400 bg-amber-950 px-2 py-0.5 rounded border border-amber-800">
+              <span className="text-xs font-mono font-bold text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-500/30">
                 {team.partial_skills.length}
               </span>
             </div>
 
             {team.partial_skills.length === 0 ? (
-              <div className="text-center py-6 text-xs text-slate-500">
+              <div className="text-center py-8 text-xs text-slate-500">
                 No partial skill deficiencies detected.
               </div>
             ) : (
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 {team.partial_skills.map((skillName) => {
                   const req = project.required_skills.find(
                     (s) => s.name.toLowerCase() === skillName.toLowerCase()
@@ -124,16 +122,16 @@ export const SkillCoverageMatrix: React.FC<SkillCoverageMatrixProps> = ({
                   return (
                     <div
                       key={skillName}
-                      className="p-2.5 rounded-lg bg-slate-900/80 border border-amber-900/30 text-xs"
+                      className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs"
                     >
-                      <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center justify-between mb-1.5">
                         <span className="font-semibold text-slate-100">{skillName}</span>
-                        <span className="text-[10px] text-amber-400 bg-amber-950 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] font-mono text-amber-300 bg-amber-950 px-2 py-0.5 rounded border border-amber-500/30">
                           Below Target Prof.
                         </span>
                       </div>
                       <p className="text-[11px] text-slate-400 m-0">
-                        Target: {req?.min_level || 'intermediate'} ({req?.min_proficiency || 3}/5).
+                        Target requirement: {req?.min_level || 'intermediate'} ({req?.min_proficiency || 3}/5).
                       </p>
                     </div>
                   );
@@ -141,42 +139,42 @@ export const SkillCoverageMatrix: React.FC<SkillCoverageMatrixProps> = ({
               </div>
             )}
           </div>
-          <p className="text-[10px] text-amber-400/80 pt-3 border-t border-amber-900/20 mt-3 m-0">
-            ⚠ Present in roster but may require mentoring or training.
+          <p className="text-[11px] text-amber-400/80 pt-3 border-t border-amber-500/10 mt-3 m-0">
+            ⚠ Present in team but may require senior mentoring or pair programming.
           </p>
         </div>
 
         {/* 3. Critical Uncovered Gaps */}
-        <div className="bg-slate-950/70 border border-rose-900/40 rounded-xl p-4 flex flex-col justify-between">
+        <div className="bg-navy-950/70 border border-rose-500/20 rounded-2xl p-4 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-rose-900/40">
+            <div className="flex items-center justify-between pb-3 mb-3.5 border-b border-rose-500/20">
               <div className="flex items-center gap-2">
                 <XCircle className="w-4 h-4 text-rose-400" />
                 <h4 className="text-xs font-bold text-rose-300 uppercase tracking-wider m-0">
                   Critical Gaps
                 </h4>
               </div>
-              <span className="text-xs font-mono font-bold text-rose-400 bg-rose-950 px-2 py-0.5 rounded border border-rose-800">
+              <span className="text-xs font-mono font-bold text-rose-300 bg-rose-950/80 px-2 py-0.5 rounded border border-rose-500/30">
                 {team.critical_gaps.length}
               </span>
             </div>
 
             {team.critical_gaps.length === 0 ? (
-              <div className="text-center py-6 text-xs text-emerald-400 bg-emerald-950/30 rounded-lg border border-emerald-900/40 p-4">
-                <CheckCircle2 className="w-6 h-6 mx-auto mb-1 text-emerald-400" />
-                <span className="font-semibold block">Zero Critical Gaps!</span>
-                <span className="text-[11px] text-emerald-300/80 mt-0.5 block">
-                  All critical project requirements are covered by the recommended team.
+              <div className="text-center py-8 text-xs text-emerald-400 bg-emerald-950/30 rounded-xl border border-emerald-500/30 p-5">
+                <CheckCircle2 className="w-7 h-7 mx-auto mb-2 text-emerald-400" />
+                <span className="font-bold text-sm block text-emerald-300">Zero Critical Gaps</span>
+                <span className="text-[11px] text-emerald-400/80 mt-1 block">
+                  All critical competencies are satisfied by the recommended team composition.
                 </span>
               </div>
             ) : (
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 {team.critical_gaps.map((skillName) => (
                   <div
                     key={skillName}
-                    className="p-2.5 rounded-lg bg-rose-950/40 border border-rose-800 text-xs text-rose-200"
+                    className="p-3 rounded-xl bg-rose-950/40 border border-rose-500/40 text-xs text-rose-200"
                   >
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center justify-between mb-1.5">
                       <span className="font-bold">{skillName}</span>
                       <CriticalBadge label="Critical Risk" />
                     </div>
@@ -188,8 +186,8 @@ export const SkillCoverageMatrix: React.FC<SkillCoverageMatrixProps> = ({
               </div>
             )}
           </div>
-          <p className="text-[10px] text-rose-400/80 pt-3 border-t border-rose-900/20 mt-3 m-0">
-            ✕ High staffing risk: requires hiring or external contractor support.
+          <p className="text-[11px] text-rose-400/80 pt-3 border-t border-rose-500/10 mt-3 m-0">
+            ✕ High staffing risk: requires external contract support or scope adjustment.
           </p>
         </div>
       </div>
