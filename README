@@ -22,14 +22,14 @@ AI Integration
 
 The AI component helps understand project requirements and identify relevant skills. A matching algorithm compares these requirements with employee profiles to recommend suitable team members.
 
-Technology Stack
+Technology Stack:
 
 - Frontend: React+Vite+TypeScript
 - Backend: Python+FastAPI+Uvicorn
 - AI: Gemma 4 E4B
 - Database: JSON seed data,no database initially
 
-How It Works
+How It Works:
 
 1. Employee profiles contain skills, experience, and roles.
 2. A manager enters project requirements.
