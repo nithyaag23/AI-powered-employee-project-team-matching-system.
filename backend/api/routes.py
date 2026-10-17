@@ -32,6 +32,7 @@ from backend.schemas.models import (
     HealthResponse,
     MatchRequest,
     MatchResponse,
+    MatchResult,
     Project,
     ProjectAnalysisRequest,
     ProjectAnalysisResponse,
@@ -59,6 +60,16 @@ def resolve_project(project_id: Optional[str], project: Optional[Project]) -> Pr
         seed_proj = get_seed_project_by_id(project_id)
         if seed_proj is not None:
             return seed_proj
+        # Seamless alias support for Person 1 frontend mock IDs (proj-1 -> PRJ-101)
+        alias_map = {
+            "proj-1": "PRJ-101",
+            "proj-2": "PRJ-102",
+            "proj-3": "PRJ-103",
+        }
+        if project_id.lower() in alias_map:
+            aliased = get_seed_project_by_id(alias_map[project_id.lower()])
+            if aliased is not None:
+                return aliased
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Project with ID '{project_id}' not found in seed dataset.",
@@ -204,4 +215,72 @@ def simulate_swap(req: SwapSimulationRequest) -> SwapSimulationResult:
         candidate_pool=pool,
     )
     return result
+
+
+# ==============================================================================
+# Person 1 (Frontend) Convenience Aliases
+# ==============================================================================
+
+@router.get("/projects", response_model=List[Project], summary="Get All Projects")
+def get_all_projects() -> List[Project]:
+    return get_seed_projects()
+
+
+@router.get("/employees", response_model=List[Employee], summary="Get All Employees")
+def get_all_employees() -> List[Employee]:
+    return get_seed_employees()
+
+
+@router.get(
+    "/projects/{project_id}/matches",
+    response_model=List[MatchResult],
+    summary="Get Matches For Project (Frontend Direct Array)",
+)
+def get_project_matches_direct(project_id: str) -> List[MatchResult]:
+    project = resolve_project(project_id, None)
+    pool = get_seed_employees()
+    matches = rank_candidates_for_project(pool, project)
+    return matches
+
+
+@router.post(
+    "/projects/{project_id}/recommend-team",
+    response_model=TeamResult,
+    summary="Recommend Team For Project (Frontend Path)",
+)
+def recommend_team_direct(project_id: str) -> TeamResult:
+    project = resolve_project(project_id, None)
+    pool = get_seed_employees()
+    return select_optimized_team(candidates=pool, project=project)
+
+
+@router.post(
+    "/projects/{project_id}/compare",
+    response_model=ComparisonResult,
+    summary="Compare Baseline vs Optimizer (Frontend Path)",
+)
+def compare_teams_direct(project_id: str) -> ComparisonResult:
+    project = resolve_project(project_id, None)
+    pool = get_seed_employees()
+    res = compare_baseline_and_optimizer(candidates=pool, project=project)
+    res.project_id = project_id
+    return res
+
+
+@router.post(
+    "/projects/{project_id}/simulate",
+    response_model=SwapSimulationResult,
+    summary="Simulate Swap For Project (Frontend Path)",
+)
+def simulate_swap_direct(project_id: str, req: SwapSimulationRequest) -> SwapSimulationResult:
+    project = resolve_project(project_id, None)
+    pool = resolve_candidate_pool(req.candidate_pool)
+    return simulate_member_swap(
+        current_team_ids=req.current_team_ids,
+        remove_employee_id=req.remove_employee_id,
+        add_employee_id=req.add_employee_id,
+        project=project,
+        candidate_pool=pool,
+    )
+
 

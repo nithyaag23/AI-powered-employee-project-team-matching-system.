@@ -145,6 +145,8 @@ class Employee(BaseModel):
     id: str = Field(..., description="Unique employee identifier (e.g., 'EMP-001')")
     name: str = Field(..., description="Full legal or display name")
     title: Optional[str] = Field(default=None, description="Professional title or role")
+    role_title: Optional[str] = Field(default=None, description="Alias for title")
+    avatar_url: Optional[str] = Field(default=None, description="Avatar image URL")
     skills: List[SkillEvidence] = Field(
         default_factory=list,
         description="List of skills possessed by the employee"
@@ -164,6 +166,14 @@ class Employee(BaseModel):
         default_factory=list,
         description="Domain or technical interests (e.g. ['Machine Learning', 'Fintech'])"
     )
+
+    @model_validator(mode="after")
+    def sync_titles(self) -> "Employee":
+        if self.role_title and not self.title:
+            self.title = self.role_title
+        elif self.title and not self.role_title:
+            self.role_title = self.title
+        return self
 
     @field_validator("availability", mode="before")
     @classmethod
@@ -326,6 +336,10 @@ class TeamResult(BaseModel):
         default=0.0,
         description="Internal optimizer objective value: 1000*Cov + 10*Fit - Redundancy"
     )
+    algorithm_used: Optional[str] = Field(
+        default="combinatorial_coverage",
+        description="Optimizer algorithm name"
+    )
     is_feasible: bool = Field(
         default=True,
         description="False if hard constraints (size, availability) were violated"
@@ -339,6 +353,20 @@ class ComparisonDeltas(BaseModel):
     team_fit_score_delta: float = Field(..., description="Average fit score difference")
     critical_gaps_reduced: int = Field(..., description="Baseline critical gaps minus optimizer critical gaps")
     covered_skills_count_delta: int = Field(..., description="Difference in count of fully covered skills")
+    coverage_pct_delta: Optional[float] = None
+    team_fit_delta: Optional[float] = None
+    critical_gaps_delta: Optional[int] = None
+    constraint_violations_delta: Optional[int] = 0
+
+    @model_validator(mode="after")
+    def sync_deltas(self) -> "ComparisonDeltas":
+        if self.coverage_pct_delta is None:
+            self.coverage_pct_delta = self.weighted_coverage_pct_delta
+        if self.team_fit_delta is None:
+            self.team_fit_delta = self.team_fit_score_delta
+        if self.critical_gaps_delta is None:
+            self.critical_gaps_delta = self.critical_gaps_reduced
+        return self
 
 
 class ComparisonResult(BaseModel):
@@ -350,6 +378,7 @@ class ComparisonResult(BaseModel):
         default_factory=list,
         description="Analytical breakdown explaining why the teams diverge or tie"
     )
+    project_id: Optional[str] = None
 
 
 # ==============================================================================
@@ -357,8 +386,12 @@ class ComparisonResult(BaseModel):
 # ==============================================================================
 
 class HealthResponse(BaseModel):
-    status: str = "ok"
+    status: str = "healthy"
     app_version: str = "1.0.0"
+    backend_version: str = "1.0.0"
+    ai_service_available: bool = True
+    model_name: str = "Open-Weight Rule Engine & AI Adapter"
+    message: str = "Connected to live FastAPI backend."
 
 
 class DemoDataResponse(BaseModel):
@@ -400,10 +433,21 @@ class TeamCompareRequest(BaseModel):
 class SwapSimulationRequest(BaseModel):
     project_id: Optional[str] = None
     project: Optional[Project] = None
-    current_team_ids: List[str] = Field(..., min_length=1, description="Current member IDs")
+    current_team_ids: Optional[List[str]] = Field(default=None, description="Current member IDs")
+    current_team: Optional[List[str]] = Field(default=None, description="Alias for current_team_ids")
     remove_employee_id: str = Field(..., description="Employee ID to be removed")
     add_employee_id: str = Field(..., description="Employee ID to be added")
     candidate_pool: Optional[List[Employee]] = None
+
+    @model_validator(mode="after")
+    def sync_team_ids(self) -> "SwapSimulationRequest":
+        if not self.current_team_ids and self.current_team:
+            self.current_team_ids = self.current_team
+        elif self.current_team_ids and not self.current_team:
+            self.current_team = self.current_team_ids
+        if not self.current_team_ids:
+            raise ValueError("Must provide current_team_ids or current_team.")
+        return self
 
 
 class SwapSimulationResult(BaseModel):
@@ -413,6 +457,20 @@ class SwapSimulationResult(BaseModel):
     deltas: ComparisonDeltas
     impact_summary: List[str] = Field(default_factory=list)
     warnings: List[str] = Field(default_factory=list)
+    previous_team: Optional[TeamResult] = None
+    new_team: Optional[TeamResult] = None
+    swap_summary: Optional[Dict[str, Any]] = None
+    evaluation_notes: Optional[List[str]] = None
+
+    @model_validator(mode="after")
+    def sync_swap_aliases(self) -> "SwapSimulationResult":
+        if self.previous_team is None:
+            self.previous_team = self.before
+        if self.new_team is None:
+            self.new_team = self.after
+        if self.evaluation_notes is None:
+            self.evaluation_notes = self.impact_summary
+        return self
 
 
 class SkillExtractionRequest(BaseModel):

@@ -162,3 +162,34 @@ def test_invalid_input_validation_error():
     response = client.post("/api/skills/extract", json={})
     assert response.status_code == 422
 
+
+def test_frontend_convenience_endpoints():
+    """Verify that frontend endpoints (/projects, /employees, /projects/{id}/matches, etc.) function properly."""
+    # GET /api/projects
+    p_resp = client.get("/api/projects")
+    assert p_resp.status_code == 200
+    assert len(p_resp.json()) >= 2
+
+    # GET /api/employees
+    e_resp = client.get("/api/employees")
+    assert e_resp.status_code == 200
+    assert len(e_resp.json()) >= 5
+
+    # GET /api/projects/proj-1/matches (alias lookup)
+    m_resp = client.get("/api/projects/proj-1/matches")
+    assert m_resp.status_code == 200
+    assert isinstance(m_resp.json(), list)
+    assert len(m_resp.json()) > 0
+
+    # POST /api/projects/proj-1/recommend-team
+    r_resp = client.post("/api/projects/proj-1/recommend-team")
+    assert r_resp.status_code == 200
+    assert "members" in r_resp.json()
+
+    # POST /api/projects/proj-1/compare
+    c_resp = client.post("/api/projects/proj-1/compare")
+    assert c_resp.status_code == 200
+    assert "baseline" in c_resp.json()
+    assert "optimized" in c_resp.json()
+
+
