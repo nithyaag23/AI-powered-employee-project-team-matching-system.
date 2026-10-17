@@ -1,0 +1,49 @@
+{
+  "data": {
+    "id": null,
+    "full_name": "Marcus Vance",
+    "current_title": "Senior Software Engineer",
+    "total_years_experience": 5.0,
+    "skills": [
+      {
+        "name": "Python",
+        "category": "TECHNICAL",
+        "proficiency": "ADVANCED",
+        "years_of_experience": null,
+        "verification_status": "VERIFIED",
+        "evidence": "Engineered high-throughput asynchronous services in FastAPI handling 10k requests per second.",
+        "confidence_score": 0.90
+      },
+      {
+        "name": "Docker",
+        "category": "DEVOPS_CLOUD",
+        "proficiency": "ADVANCED",
+        "years_of_experience": null,
+        "verification_status": "VERIFIED",
+        "evidence": "Created multi-stage Dockerfiles and streamlined team CI pipelines on GitHub Actions.",
+        "confidence_score": 0.90
+      },
+      {
+        "name": "Kubernetes",
+        "category": "DEVOPS_CLOUD",
+        "proficiency": "INTERMEDIATE",
+        "years_of_experience": null,
+        "verification_status": "UNVERIFIED",
+        "evidence": null,
+        "confidence_score": 0.50
+      }
+    ],
+    "certifications": [],
+    "summary": "Full stack and backend developer with 5 years experience specializing in Python and cloud microservices."
+  },
+  "metadata": {
+    "provider": "deterministic_fallback",
+    "model_version": "1.0.0-deterministic-fallback",
+    "mode": "deterministic_fallback",
+    "latency_ms": 1.45,
+    "warnings": [
+      "Extracted via deterministic fallback rule engine (offline mode)."
+    ],
+    "timestamp": "2026-10-17T12:00:00.000Z"
+  }
+}

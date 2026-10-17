@@ -1,0 +1,55 @@
+{
+  "data": {
+    "id": "proj-1",
+    "title": "Enterprise AI Agentic Workflow Platform",
+    "description": "Building an explainable multi-agent system for regulatory compliance and enterprise document reasoning. Requires deep Python/LLM orchestration, a modern TypeScript/React web interface, and robust containerization.",
+    "domain": "Artificial Intelligence",
+    "target_team_size": 3,
+    "required_skills": [
+      {
+        "name": "Python",
+        "minimum_proficiency": "ADVANCED",
+        "is_mandatory": true,
+        "weight": 3.0
+      },
+      {
+        "name": "PyTorch",
+        "minimum_proficiency": "ADVANCED",
+        "is_mandatory": true,
+        "weight": 3.0
+      },
+      {
+        "name": "TypeScript",
+        "minimum_proficiency": "INTERMEDIATE",
+        "is_mandatory": true,
+        "weight": 2.5
+      },
+      {
+        "name": "React",
+        "minimum_proficiency": "INTERMEDIATE",
+        "is_mandatory": false,
+        "weight": 2.0
+      },
+      {
+        "name": "Docker",
+        "minimum_proficiency": "INTERMEDIATE",
+        "is_mandatory": false,
+        "weight": 1.5
+      },
+      {
+        "name": "PostgreSQL",
+        "minimum_proficiency": "INTERMEDIATE",
+        "is_mandatory": false,
+        "weight": 1.5
+      }
+    ]
+  },
+  "metadata": {
+    "provider": "gemini",
+    "model_version": "gemini-1.5-flash",
+    "mode": "live_model",
+    "latency_ms": 389.2,
+    "warnings": [],
+    "timestamp": "2026-10-17T12:00:00.000Z"
+  }
+}

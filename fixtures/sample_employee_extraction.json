@@ -1,0 +1,68 @@
+{
+  "data": {
+    "id": "emp-01",
+    "full_name": "Dr. Elena Rostova",
+    "current_title": "Staff AI Research Engineer",
+    "total_years_experience": 8.0,
+    "skills": [
+      {
+        "name": "Python",
+        "category": "TECHNICAL",
+        "proficiency": "EXPERT",
+        "years_of_experience": 8.0,
+        "verification_status": "VERIFIED",
+        "evidence": "Primary author of 4 core production ML inference microservices in FastAPI serving 50M requests daily.",
+        "confidence_score": 0.98
+      },
+      {
+        "name": "PyTorch",
+        "category": "FRAMEWORK_OR_TOOL",
+        "proficiency": "EXPERT",
+        "years_of_experience": 6.0,
+        "verification_status": "VERIFIED",
+        "evidence": "Fine-tuned 7B and 14B parameter transformer models with LoRA and FlashAttention on a 64-GPU AWS cluster.",
+        "confidence_score": 0.95
+      },
+      {
+        "name": "Docker",
+        "category": "DEVOPS_CLOUD",
+        "proficiency": "INTERMEDIATE",
+        "years_of_experience": 4.0,
+        "verification_status": "VERIFIED",
+        "evidence": "Containerized multi-stage CUDA builds and managed Helm charts on EKS.",
+        "confidence_score": 0.88
+      },
+      {
+        "name": "LangChain",
+        "category": "FRAMEWORK_OR_TOOL",
+        "proficiency": "INTERMEDIATE",
+        "years_of_experience": null,
+        "verification_status": "UNVERIFIED",
+        "evidence": null,
+        "confidence_score": 0.50
+      },
+      {
+        "name": "Rust",
+        "category": "TECHNICAL",
+        "proficiency": "BEGINNER",
+        "years_of_experience": null,
+        "verification_status": "UNKNOWN",
+        "evidence": null,
+        "confidence_score": 0.35
+      }
+    ],
+    "certifications": [
+      "AWS Certified Solutions Architect - Professional",
+      "Certified Kubernetes Administrator (CKA)"
+    ],
+    "summary": "Accomplished AI researcher and distributed systems engineer with 8 years of experience leading machine learning model inference optimization and scalable backend architectures."
+  },
+  "metadata": {
+    "provider": "gemini",
+    "model_version": "gemini-1.5-flash",
+    "mode": "live_model",
+    "latency_ms": 412.5,
+    "warnings": [],
+    "timestamp": "2026-10-17T12:00:00.000Z"
+  }
+}
