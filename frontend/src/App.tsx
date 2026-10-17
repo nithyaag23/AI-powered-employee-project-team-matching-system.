@@ -1,122 +1,81 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState, useEffect, useCallback } from 'react';
+import type { HealthResponse } from './types/api';
+import { apiService } from './services/api';
+import { Header } from './components/common/Header';
+import { Dashboard } from './pages/Dashboard';
+import { ShieldCheck, Info } from 'lucide-react';
 
-function App() {
-  const [count, setCount] = useState(0)
+export function App() {
+  const [health, setHealth] = useState<HealthResponse | null>(null);
+  const [dataSource, setDataSource] = useState<'live-backend' | 'mock-fixture'>('mock-fixture');
+  const [isCheckingHealth, setIsCheckingHealth] = useState<boolean>(true);
+  const [activeTab, setActiveTab] = useState<'candidates' | 'team' | 'comparison' | 'simulator'>('candidates');
+
+  const checkBackendHealth = useCallback(async () => {
+    setIsCheckingHealth(true);
+    try {
+      const result = await apiService.checkHealth();
+      setHealth(result);
+      setDataSource(apiService.getActiveSource());
+    } catch {
+      setHealth({
+        status: 'offline',
+        ai_service_available: false,
+        message: 'Could not reach backend. Running in mock fixture mode.',
+      });
+      setDataSource('mock-fixture');
+    } finally {
+      setIsCheckingHealth(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkBackendHealth();
+  }, [checkBackendHealth]);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      {/* App Header & Navigation */}
+      <Header
+        health={health}
+        dataSource={dataSource}
+        isCheckingHealth={isCheckingHealth}
+        onRefreshHealth={checkBackendHealth}
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
+      />
 
-      <div className="ticks"></div>
+      {/* Main Content Area */}
+      <div className="flex-1">
+        <Dashboard activeTab={activeTab} />
+      </div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      {/* Footer */}
+      <footer className="border-t border-slate-800 bg-slate-900/60 py-6 text-xs text-slate-400">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="font-semibold text-slate-300">SkillSync AI</span>
+            <span>•</span>
+            <span>Finite Loop OSS Fest 2026</span>
+            <span>•</span>
+            <span>3-Person Coordinated Build</span>
+          </div>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+          <div className="flex items-center gap-4 text-slate-400">
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              Evidence-Backed Explainability
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5 text-indigo-400" />
+              Advisory Match Indicators
+            </span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
 }
 
-export default App
+export default App;
