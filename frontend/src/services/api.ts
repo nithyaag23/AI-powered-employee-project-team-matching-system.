@@ -272,6 +272,7 @@ class ApiService {
               body: JSON.stringify({ project_id: projectId }),
             });
           }
+        }
         if (res.ok) {
           const resJson = await res.json();
           const list: MatchResult[] = Array.isArray(resJson)
