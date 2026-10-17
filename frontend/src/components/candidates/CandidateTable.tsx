@@ -12,17 +12,18 @@ import {
   ChevronUp,
   FileCode,
 } from 'lucide-react';
-import type { MatchResult, SkillEvidence } from '../../types/api';
+import type { MatchResult, SkillEvidence, Employee } from '../../types/api';
 import { ScoreBar } from '../common/ScoreBar';
 import { VerificationBadge, LevelBadge } from '../common/Badge';
 import { EvidenceModal } from '../common/EvidenceModal';
 
 interface CandidateTableProps {
   matches: MatchResult[];
+  employees?: Employee[];
   isLoading?: boolean;
 }
 
-export const CandidateTable: React.FC<CandidateTableProps> = ({ matches, isLoading }) => {
+export const CandidateTable: React.FC<CandidateTableProps> = ({ matches, employees, isLoading }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'verified' | 'warnings'>('all');
   const [sortBy, setSortBy] = useState<'score' | 'experience' | 'availability'>('score');
@@ -37,6 +38,21 @@ export const CandidateTable: React.FC<CandidateTableProps> = ({ matches, isLoadi
   const toPct = (val?: number): number => {
     if (val === undefined || val === null || isNaN(val)) return 0;
     return Math.round(val <= 1.0 ? val * 100 : val);
+  };
+
+  // Helper to resolve full candidate profile from item or employees pool
+  const getEmp = (item: MatchResult): Employee | undefined => {
+    if (item.employee) return item.employee;
+    if (employees && employees.length > 0) {
+      const byId = employees.find((e) => e.id.toLowerCase() === item.employee_id.toLowerCase());
+      if (byId) return byId;
+      const num = parseInt(item.employee_id.replace(/\D/g, ''), 10);
+      if (!isNaN(num)) {
+        const byNum = employees.find((e) => parseInt(e.id.replace(/\D/g, ''), 10) === num);
+        if (byNum) return byNum;
+      }
+    }
+    return undefined;
   };
 
   // Summary Metrics calculated from actual data
@@ -58,43 +74,59 @@ export const CandidateTable: React.FC<CandidateTableProps> = ({ matches, isLoadi
 
     // Search query
     if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
+      const q = searchQuery.toLowerCase().trim();
       result = result.filter((item) => {
-        const emp = item.employee;
-        const nameMatch = emp?.name.toLowerCase().includes(q) || false;
-        const roleMatch = emp?.role_title?.toLowerCase().includes(q) || false;
-        const skillMatch = emp?.skills.some((s) => s.name.toLowerCase().includes(q)) || false;
-        return nameMatch || roleMatch || skillMatch;
+        const emp = getEmp(item);
+        const name = emp?.name || item.employee_name || '';
+        const role = emp?.role_title || emp?.title || '';
+        const id = item.employee_id || '';
+
+        const nameMatch = name.toLowerCase().includes(q);
+        const idMatch = id.toLowerCase().includes(q);
+        const roleMatch = role.toLowerCase().includes(q);
+        const skillMatch = emp?.skills?.some((s) => s.name?.toLowerCase().includes(q)) || false;
+        const interestMatch = emp?.interests?.some((i) => i.toLowerCase().includes(q)) || false;
+        const reasonsMatch = item.reasons?.some((r) => r.toLowerCase().includes(q)) || false;
+
+        return nameMatch || idMatch || roleMatch || skillMatch || interestMatch || reasonsMatch;
       });
     }
 
     // Filter type
     if (filterType === 'verified') {
-      result = result.filter((item) =>
-        item.employee?.skills.some((s) => s.verification_status === 'verified')
-      );
+      result = result.filter((item) => {
+        const emp = getEmp(item);
+        return (
+          emp?.skills?.some((s) => s.verification_status === 'verified') ||
+          item.warnings.length === 0
+        );
+      });
     } else if (filterType === 'warnings') {
-      result = result.filter((item) => item.warnings.length > 0);
+      result = result.filter((item) => item.warnings && item.warnings.length > 0);
     }
 
     // Sort
     result.sort((a, b) => {
       if (sortBy === 'score') return b.overall_score - a.overall_score;
       if (sortBy === 'experience') {
-        const expA = a.employee?.experience_years ?? 0;
-        const expB = b.employee?.experience_years ?? 0;
+        const empA = getEmp(a);
+        const empB = getEmp(b);
+        const expA = empA?.experience_years ?? 4;
+        const expB = empB?.experience_years ?? 4;
         return expB - expA;
       }
       if (sortBy === 'availability') {
-        const availA = a.employee?.availability ?? 0;
-        const availB = b.employee?.availability ?? 0;
+        const empA = getEmp(a);
+        const empB = getEmp(b);
+        const availA = empA?.availability ?? 1;
+        const availB = empB?.availability ?? 1;
         return availB - availA;
       }
       return 0;
     });
 
     return result;
-  }, [matches, searchQuery, filterType, sortBy]);
+  }, [matches, searchQuery, filterType, sortBy, employees]);
 
   const toggleExpand = (id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -278,9 +310,12 @@ export const CandidateTable: React.FC<CandidateTableProps> = ({ matches, isLoadi
               <tbody className="divide-y divide-slate-800/60 text-xs">
                 {filteredMatches.map((item, index) => {
                   const rank = index + 1;
-                  const emp = item.employee;
+                  const emp = getEmp(item);
                   const isExpanded = expandedId === item.employee_id;
                   const hasWarnings = item.warnings.length > 0;
+                  const candidateName = emp?.name || item.employee_name || item.employee_id;
+                  const roleTitle = emp?.role_title || emp?.title || 'Software Engineer';
+                  const expYears = emp?.experience_years ? `${emp.experience_years} yrs exp` : '4 yrs exp';
 
                   return (
                     <React.Fragment key={item.employee_id}>
@@ -310,20 +345,20 @@ export const CandidateTable: React.FC<CandidateTableProps> = ({ matches, isLoadi
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700/60 flex items-center justify-center font-bold text-xs text-teal-400 shrink-0">
-                              {emp?.name.charAt(0) || 'E'}
+                              {candidateName.charAt(0)}
                             </div>
                             <div className="min-w-0">
                               <div className="font-bold text-slate-100 text-sm truncate flex items-center gap-2">
-                                <span>{emp?.name || item.employee_id}</span>
+                                <span>{candidateName}</span>
                                 <span className="text-[10px] font-mono text-slate-500">
                                   {item.employee_id}
                                 </span>
                               </div>
                               <div className="text-slate-400 text-[11px] flex items-center gap-2 mt-0.5 truncate">
-                                <span>{emp?.role_title || 'Software Engineer'}</span>
+                                <span>{roleTitle}</span>
                                 <span className="text-slate-600">•</span>
                                 <span className="font-mono text-slate-300">
-                                  {emp?.experience_years ?? 4} yrs exp
+                                  {expYears}
                                 </span>
                               </div>
                             </div>

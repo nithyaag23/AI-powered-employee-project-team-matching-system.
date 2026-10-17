@@ -307,7 +307,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           {/* TAB 1: Ranked Candidates & Evidence */}
           {activeTab === 'candidates' && (
             <section className="space-y-6 animate-in fade-in duration-200">
-              <CandidateTable matches={matches} />
+              <CandidateTable matches={matches} employees={employees} />
             </section>
           )}
 

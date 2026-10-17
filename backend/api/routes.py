@@ -109,6 +109,8 @@ def get_health() -> HealthResponse:
     )
 
 
+
+
 @router.get("/demo", response_model=DemoDataResponse, summary="Get Synthetic Demo Dataset")
 def get_demo_data() -> DemoDataResponse:
     """Returns deterministic synthetic projects and employee profiles for offline demoing."""

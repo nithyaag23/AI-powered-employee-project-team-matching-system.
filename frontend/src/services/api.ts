@@ -34,6 +34,7 @@ class ApiService {
   private baseUrl: string;
   private isBackendHealthy: boolean = false;
   private activeSource: 'live-backend' | 'mock-fixture' = 'mock-fixture';
+  private cachedEmployees: Employee[] = [];
 
   constructor() {
     this.baseUrl = BASE_URL.replace(/\/$/, '');
@@ -49,6 +50,10 @@ class ApiService {
 
   public isUsingMocks(): boolean {
     return this.activeSource === 'mock-fixture';
+  }
+
+  public getCachedEmployees(): Employee[] {
+    return this.cachedEmployees;
   }
 
   /**
@@ -105,9 +110,22 @@ class ApiService {
       try {
         const res = await fetch(`${this.baseUrl}/api/demo`);
         if (res.ok) {
-          const data = await res.json();
+          const data: DemoBundle = await res.json();
           this.activeSource = 'live-backend';
+          this.cachedEmployees = data.employees || [];
           return { data, source: 'live-backend' };
+        }
+        // Fallback to separate endpoints
+        const [projRes, empRes] = await Promise.all([
+          fetch(`${this.baseUrl}/api/projects`),
+          fetch(`${this.baseUrl}/api/employees`),
+        ]);
+        if (projRes.ok && empRes.ok) {
+          const projects = await projRes.json();
+          const employees = await empRes.json();
+          this.activeSource = 'live-backend';
+          this.cachedEmployees = employees || [];
+          return { data: { projects, employees }, source: 'live-backend' };
         }
       } catch (e) {
         if (!ENABLE_MOCK_FALLBACK) throw e;
@@ -115,6 +133,7 @@ class ApiService {
     }
 
     this.activeSource = 'mock-fixture';
+    this.cachedEmployees = MOCK_EMPLOYEES;
     return {
       data: {
         projects: MOCK_PROJECTS,
@@ -157,6 +176,7 @@ class ApiService {
         if (res.ok) {
           const data = await res.json();
           this.activeSource = 'live-backend';
+          this.cachedEmployees = data || [];
           return { data, source: 'live-backend' };
         }
       } catch (e) {
@@ -164,6 +184,7 @@ class ApiService {
       }
     }
 
+    this.cachedEmployees = MOCK_EMPLOYEES;
     return {
       data: MOCK_EMPLOYEES,
       source: 'mock-fixture',
@@ -278,10 +299,42 @@ class ApiService {
           const list: MatchResult[] = Array.isArray(resJson)
             ? resJson
             : resJson.matches || [];
-          // Ensure employees are mapped if backend sends IDs
+          // Ensure employees are mapped robustly
           const enriched = list.map((item) => {
             if (!item.employee) {
-              item.employee = MOCK_EMPLOYEES.find((e) => e.id === item.employee_id);
+              const targetId = item.employee_id.toLowerCase();
+              const numId = parseInt(item.employee_id.replace(/\D/g, ''), 10);
+
+              let found =
+                this.cachedEmployees.find((e) => e.id.toLowerCase() === targetId) ||
+                MOCK_EMPLOYEES.find((e) => e.id.toLowerCase() === targetId);
+
+              if (!found && !isNaN(numId)) {
+                found =
+                  this.cachedEmployees.find(
+                    (e) => parseInt(e.id.replace(/\D/g, ''), 10) === numId
+                  ) ||
+                  MOCK_EMPLOYEES.find(
+                    (e) => parseInt(e.id.replace(/\D/g, ''), 10) === numId
+                  );
+              }
+
+              if (found) {
+                item.employee = found;
+              } else {
+                item.employee = {
+                  id: item.employee_id,
+                  name: item.employee_name || item.employee_id,
+                  role_title: 'Software Engineer',
+                  experience_years: 4,
+                  availability: 1.0,
+                  skills: [],
+                  interests: [],
+                };
+              }
+            }
+            if (!item.employee_name && item.employee?.name) {
+              item.employee_name = item.employee.name;
             }
             return item;
           });

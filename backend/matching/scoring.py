@@ -258,6 +258,7 @@ def score_employee_match(employee: Employee, project: Project) -> MatchResult:
         component_scores=components,
         reasons=all_reasons,
         warnings=all_warnings,
+        employee=employee,
     )
 
 

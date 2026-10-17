@@ -284,6 +284,10 @@ class MatchResult(BaseModel):
         default_factory=list,
         description="Disclosures such as missing experience data or weight renormalization"
     )
+    employee: Optional[Employee] = Field(
+        default=None,
+        description="Associated full candidate profile for direct presentation"
+    )
 
 
 # ==============================================================================
@@ -500,4 +504,9 @@ class ErrorResponse(BaseModel):
     detail: str = Field(..., description="Detailed message describing the problem and resolution")
     error_code: str = Field(..., description="Standard application error code")
     status_code: int = Field(..., description="HTTP status code")
+
+
+class DemoBundle(BaseModel):
+    projects: List[Project]
+    employees: List[Employee]
 

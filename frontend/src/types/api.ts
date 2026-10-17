@@ -25,6 +25,7 @@ export interface Employee {
   availability: number; // e.g. 1.0 = 100%, 0.8 = 80% (or hours per week)
   interests: string[];
   role_title?: string;
+  title?: string;
   avatar_url?: string;
 }
 
@@ -56,6 +57,7 @@ export interface ComponentScores {
 
 export interface MatchResult {
   employee_id: string;
+  employee_name?: string;
   overall_score: number; // 0 - 100
   component_scores: ComponentScores;
   reasons: string[];
