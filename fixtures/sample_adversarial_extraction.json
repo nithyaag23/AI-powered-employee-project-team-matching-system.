@@ -1,0 +1,41 @@
+{
+  "data": {
+    "id": null,
+    "full_name": "Alex Mercer",
+    "current_title": "Software Engineer",
+    "total_years_experience": 3.0,
+    "skills": [
+      {
+        "name": "Python",
+        "category": "TECHNICAL",
+        "proficiency": "INTERMEDIATE",
+        "years_of_experience": null,
+        "verification_status": "VERIFIED",
+        "evidence": "Maintained legacy Django web applications and optimized SQL queries.",
+        "confidence_score": 0.90
+      },
+      {
+        "name": "SQL",
+        "category": "TECHNICAL",
+        "proficiency": "INTERMEDIATE",
+        "years_of_experience": null,
+        "verification_status": "VERIFIED",
+        "evidence": "Maintained legacy Django web applications and optimized SQL queries.",
+        "confidence_score": 0.90
+      }
+    ],
+    "certifications": [],
+    "summary": "Software engineer focusing on Python and backend maintenance."
+  },
+  "metadata": {
+    "provider": "deterministic_fallback",
+    "model_version": "1.0.0-deterministic-fallback",
+    "mode": "deterministic_fallback",
+    "latency_ms": 1.82,
+    "warnings": [
+      "Untrusted directive pattern detected and ignored: 'ignore\\s+(all\\s+)?(previous|prior)\\s+instructions[^\\.\\n]*'",
+      "Untrusted directive pattern detected and ignored: 'system\\s*override[^\\.\\n]*'"
+    ],
+    "timestamp": "2026-10-17T12:00:00.000Z"
+  }
+}
