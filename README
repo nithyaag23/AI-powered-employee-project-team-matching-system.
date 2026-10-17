@@ -1,0 +1,49 @@
+Smart Employee Workplace & Project Collaboration Platform
+
+About the Project
+
+An intelligent workplace platform that connects employees, workplace services, and project collaboration in one application. It helps employees discover colleagues, understand project responsibilities, and identify people with the right skills.
+
+Problem Statement
+
+Employee information, project assignments, and workplace services are often spread across different tools. Our platform aims to centralize this information and make collaboration easier.
+
+Key Features
+
+- Employee dashboard and work status
+- Employee directory and skill search
+- Project and team mapping
+- AI-powered employee matching
+- Task progress and team analysis
+- Desk and cab booking
+- Office event notifications
+
+AI Integration
+
+The AI component helps understand project requirements and identify relevant skills. A matching algorithm compares these requirements with employee profiles to recommend suitable team members.
+
+Technology Stack
+
+- Frontend: [Add your actual frontend technology]
+- Backend: [Add your actual backend technology]
+- AI: [Add the model or API you actually use]
+- Database: [Add your database, if applicable]
+
+How It Works
+
+1. Employee profiles contain skills, experience, and roles.
+2. A manager enters project requirements.
+3. AI identifies the required skills.
+4. The matching algorithm compares requirements with employee profiles.
+5. The platform recommends suitable employees.
+
+Future Enhancements
+
+- Real-time team communication
+- Advanced project analytics
+- Improved skill gap analysis
+- Integration with workplace tools
+
+Expected Impact
+
+The platform aims to improve employee collaboration, simplify workplace activities, and help managers identify suitable team members more efficiently.
