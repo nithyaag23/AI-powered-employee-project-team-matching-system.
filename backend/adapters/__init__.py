@@ -12,3 +12,4 @@ __all__ = [
     "rule_based_extract_skills",
     "rule_based_analyze_project",
 ]
+

@@ -442,3 +442,4 @@ class ErrorResponse(BaseModel):
     detail: str = Field(..., description="Detailed message describing the problem and resolution")
     error_code: str = Field(..., description="Standard application error code")
     status_code: int = Field(..., description="HTTP status code")
+

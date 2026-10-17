@@ -63,3 +63,4 @@ $$\text{Overall Match} = 100 \times (0.55 \times \text{SkillFit} + 0.20 \times \
 - **Combinatorial Optimizer:** Maximizes weighted required skill coverage:
   $$\text{Objective} = 1000 \times \text{WeightedCoverage} + 10 \times \text{TeamFit} - 2 \times \text{Redundancy}$$
 - **Equal Footing Evaluation:** Both teams are passed to the identical `evaluate_team_metrics()` function. All comparison deltas are calculated directly from real outputs.
+

@@ -64,3 +64,4 @@ def get_seed_employee_by_id(employee_id: str) -> Optional[Employee]:
     load_seed_data()
     assert _EMPLOYEE_INDEX is not None
     return _EMPLOYEE_INDEX.get(employee_id)
+

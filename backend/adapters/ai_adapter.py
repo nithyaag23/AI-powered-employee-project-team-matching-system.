@@ -178,3 +178,4 @@ def analyze_project_text(
     warnings.append("AI project analyzer provider not configured; using deterministic rules engine.")
     proj = rule_based_analyze_project(description, name, team_size)
     return proj, warnings
+

@@ -151,3 +151,4 @@ def test_availability_normalization():
     # Pass 80% -> should normalize to 0.8
     e3 = Employee(id="E3", name="Percentage", availability=80.0)
     assert e3.availability == 0.8
+

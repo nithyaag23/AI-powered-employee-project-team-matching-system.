@@ -153,3 +153,4 @@ def test_swap_simulation_invalid_remove_id(seed_data):
 
     assert not res.valid
     assert any("Invalid swap" in s for s in res.impact_summary)
+

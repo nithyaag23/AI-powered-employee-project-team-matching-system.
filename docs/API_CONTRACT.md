@@ -532,3 +532,4 @@ All 4xx and 5xx responses conform to this shape:
    - Expected return format: list of `SkillEvidence` objects or dictionaries matching:
      `{"name": str, "level": str, "evidence": Optional[str], "verification_status": str, "confidence": Optional[float]}`.
    - The backend includes deterministic regex/rule-based fallback when AI credentials (`GEMINI_API_KEY`, etc.) are absent.
+

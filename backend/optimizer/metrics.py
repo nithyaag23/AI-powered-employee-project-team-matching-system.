@@ -184,3 +184,4 @@ def compute_comparison_deltas(baseline: TeamResult, optimized: TeamResult) -> Co
         critical_gaps_reduced=len(baseline.critical_gaps) - len(optimized.critical_gaps),
         covered_skills_count_delta=len(optimized.covered_skills) - len(baseline.covered_skills),
     )
+

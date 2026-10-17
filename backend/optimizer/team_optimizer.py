@@ -304,3 +304,4 @@ def simulate_member_swap(
         impact_summary=impact_summary,
         warnings=warnings + after_res.warnings,
     )
+
