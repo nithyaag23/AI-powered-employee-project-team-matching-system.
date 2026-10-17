@@ -1,0 +1,170 @@
+{
+  "projects": [
+    {
+      "id": "PRJ-101",
+      "name": "Cloud Native E-Commerce Platform",
+      "description": "High-scale enterprise e-commerce platform requiring a high-throughput Python backend, reactive web storefront in React, and container orchestration with Kubernetes.",
+      "required_skills": [
+        {"name": "Python", "min_level": "advanced", "weight": 2.0, "critical": true},
+        {"name": "FastAPI", "min_level": "intermediate", "weight": 1.5, "critical": false},
+        {"name": "React", "min_level": "intermediate", "weight": 2.0, "critical": true},
+        {"name": "Kubernetes", "min_level": "intermediate", "weight": 2.0, "critical": true},
+        {"name": "PostgreSQL", "min_level": "intermediate", "weight": 1.5, "critical": false}
+      ],
+      "team_size": 3,
+      "availability_window": "Q3 2026",
+      "min_experience_years": 4.0
+    },
+    {
+      "id": "PRJ-102",
+      "name": "Backend Microservices Core",
+      "description": "Core high-throughput asynchronous services handling payment processing and distributed transactions using Python, FastAPI, and PostgreSQL.",
+      "required_skills": [
+        {"name": "Python", "min_level": "advanced", "weight": 2.0, "critical": true},
+        {"name": "FastAPI", "min_level": "intermediate", "weight": 1.5, "critical": true},
+        {"name": "PostgreSQL", "min_level": "intermediate", "weight": 1.5, "critical": true}
+      ],
+      "team_size": 2,
+      "availability_window": "Immediate",
+      "min_experience_years": 5.0
+    },
+    {
+      "id": "PRJ-103",
+      "name": "AI Customer Insights Engine",
+      "description": "Predictive analytics and recommendation platform processing customer purchase patterns using machine learning and scalable data pipelines.",
+      "required_skills": [
+        {"name": "Python", "min_level": "advanced", "weight": 2.0, "critical": true},
+        {"name": "Machine Learning", "min_level": "advanced", "weight": 2.5, "critical": true},
+        {"name": "Data Engineering", "min_level": "intermediate", "weight": 2.0, "critical": true},
+        {"name": "Docker", "min_level": "intermediate", "weight": 1.0, "critical": false}
+      ],
+      "team_size": 3,
+      "availability_window": "Q4 2026",
+      "min_experience_years": 3.0
+    }
+  ],
+  "employees": [
+    {
+      "id": "EMP-001",
+      "name": "Alice Chen",
+      "title": "Principal Backend Architect",
+      "skills": [
+        {"name": "Python", "level": "advanced", "evidence": "8 years microservices architecture", "verification_status": "verified", "confidence": 0.95},
+        {"name": "FastAPI", "level": "advanced", "evidence": "Architected low-latency APIs", "verification_status": "verified", "confidence": 0.92},
+        {"name": "PostgreSQL", "level": "advanced", "evidence": "Partitioning and query tuning", "verification_status": "verified", "confidence": 0.90},
+        {"name": "Docker", "level": "intermediate", "evidence": "Containerization of apps", "verification_status": "verified", "confidence": 0.85}
+      ],
+      "experience_years": 8.0,
+      "availability": 1.0,
+      "interests": ["Microservices", "Distributed Systems", "Cloud Architecture"]
+    },
+    {
+      "id": "EMP-002",
+      "name": "Bob Martinez",
+      "title": "Senior Python Specialist",
+      "skills": [
+        {"name": "Python", "level": "advanced", "evidence": "Core python asynchronous frameworks", "verification_status": "verified", "confidence": 0.93},
+        {"name": "FastAPI", "level": "advanced", "evidence": "Built real-time websockets & APIs", "verification_status": "verified", "confidence": 0.90},
+        {"name": "Redis", "level": "advanced", "evidence": "Distributed caching & pub/sub", "verification_status": "verified", "confidence": 0.88},
+        {"name": "PostgreSQL", "level": "intermediate", "evidence": "Relational data modeling", "verification_status": "verified", "confidence": 0.85}
+      ],
+      "experience_years": 7.0,
+      "availability": 1.0,
+      "interests": ["High Performance Computing", "Asynchronous Systems", "Databases"]
+    },
+    {
+      "id": "EMP-003",
+      "name": "Charlie Davis",
+      "title": "Database & Backend Engineer",
+      "skills": [
+        {"name": "Python", "level": "advanced", "evidence": "ETL pipelines and backend services", "verification_status": "verified", "confidence": 0.90},
+        {"name": "PostgreSQL", "level": "advanced", "evidence": "DBA, index optimization, replicas", "verification_status": "verified", "confidence": 0.92},
+        {"name": "SQLAlchemy", "level": "advanced", "evidence": "ORM tuning", "verification_status": "verified", "confidence": 0.87},
+        {"name": "Redis", "level": "intermediate", "evidence": "In-memory caching", "verification_status": "unverified", "confidence": 0.80}
+      ],
+      "experience_years": 6.5,
+      "availability": 1.0,
+      "interests": ["Database Optimization", "Data Modeling", "Microservices"]
+    },
+    {
+      "id": "EMP-004",
+      "name": "Dana Vance",
+      "title": "Frontend Lead & React Specialist",
+      "skills": [
+        {"name": "React", "level": "advanced", "evidence": "Built responsive e-commerce web applications", "verification_status": "verified", "confidence": 0.96},
+        {"name": "TypeScript", "level": "advanced", "evidence": "Strict type systems and frontend design", "verification_status": "verified", "confidence": 0.92},
+        {"name": "CSS/Tailwind", "level": "advanced", "evidence": "Modern UI design systems", "verification_status": "verified", "confidence": 0.90},
+        {"name": "Next.js", "level": "intermediate", "evidence": "SSR storefront deployment", "verification_status": "verified", "confidence": 0.85}
+      ],
+      "experience_years": 5.0,
+      "availability": 1.0,
+      "interests": ["Frontend Architecture", "UI/UX", "Web Performance"]
+    },
+    {
+      "id": "EMP-005",
+      "name": "Evan Wright",
+      "title": "DevOps & Cloud Orchestrator",
+      "skills": [
+        {"name": "Kubernetes", "level": "advanced", "evidence": "Production EKS/GKE cluster administration", "verification_status": "verified", "confidence": 0.95},
+        {"name": "Docker", "level": "advanced", "evidence": "Multi-stage builds and vulnerability scanning", "verification_status": "verified", "confidence": 0.94},
+        {"name": "CI/CD", "level": "advanced", "evidence": "GitHub Actions and ArgoCD pipelines", "verification_status": "verified", "confidence": 0.90},
+        {"name": "Terraform", "level": "intermediate", "evidence": "Infrastructure as code", "verification_status": "verified", "confidence": 0.85}
+      ],
+      "experience_years": 5.5,
+      "availability": 1.0,
+      "interests": ["Container Orchestration", "Cloud Native", "DevOps"]
+    },
+    {
+      "id": "EMP-006",
+      "name": "Fiona Gallagher",
+      "title": "Full-Stack Engineer",
+      "skills": [
+        {"name": "Python", "level": "intermediate", "evidence": "FastAPI service development", "verification_status": "verified", "confidence": 0.82},
+        {"name": "React", "level": "intermediate", "evidence": "Frontend feature development", "verification_status": "verified", "confidence": 0.80},
+        {"name": "FastAPI", "level": "intermediate", "evidence": "REST endpoint development", "verification_status": "unverified", "confidence": 0.78},
+        {"name": "PostgreSQL", "level": "beginner", "evidence": "Basic query authoring", "verification_status": "unverified", "confidence": 0.60}
+      ],
+      "experience_years": 4.0,
+      "availability": 1.0,
+      "interests": ["Fullstack Development", "Web Apps", "Cloud Architecture"]
+    },
+    {
+      "id": "EMP-007",
+      "name": "George Miller",
+      "title": "Staff ML & Data Engineer",
+      "skills": [
+        {"name": "Python", "level": "advanced", "evidence": "Scientific computing and model training", "verification_status": "verified", "confidence": 0.95},
+        {"name": "Machine Learning", "level": "advanced", "evidence": "Recommender systems and predictive modeling", "verification_status": "verified", "confidence": 0.94},
+        {"name": "Data Engineering", "level": "intermediate", "evidence": "Spark and batch ETL processing", "verification_status": "verified", "confidence": 0.85},
+        {"name": "Docker", "level": "intermediate", "evidence": "Model containerization", "verification_status": "verified", "confidence": 0.80}
+      ],
+      "experience_years": 6.0,
+      "availability": 1.0,
+      "interests": ["Machine Learning", "Recommendation Systems", "Data Science"]
+    },
+    {
+      "id": "EMP-008",
+      "name": "Hannah Abbott",
+      "title": "Junior Developer (Currently Unavailable)",
+      "skills": [
+        {"name": "Python", "level": "beginner", "evidence": "Introductory college coursework", "verification_status": "unverified", "confidence": 0.60},
+        {"name": "React", "level": "beginner", "evidence": "Personal portfolio site", "verification_status": "unverified", "confidence": 0.50}
+      ],
+      "experience_years": 1.0,
+      "availability": 0.0,
+      "interests": ["Web Development", "Frontend"]
+    },
+    {
+      "id": "EMP-009",
+      "name": "Ian Malcolm",
+      "title": "Platform Chaos Engineer (Missing Experience Data)",
+      "skills": [
+        {"name": "Python", "level": "advanced", "evidence": "Chaos automation tooling", "verification_status": "verified", "confidence": 0.90},
+        {"name": "Kubernetes", "level": "intermediate", "evidence": "Cluster fault injection", "verification_status": "verified", "confidence": 0.82}
+      ],
+      "experience_years": null,
+      "availability": 0.8,
+      "interests": ["Chaos Engineering", "Distributed Systems"]
+    }
+  ]
+}
